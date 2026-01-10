@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Content Studio - Arquitetura</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 40px;
+            color: #fff;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 50px; }
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .header .subtitle { font-size: 1.2rem; color: #94a3b8; }
+        .header .version {
+            display: inline-block;
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #c084fc;
+        }
+        .architecture { display: flex; flex-direction: column; gap: 30px; }
+        .layer {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .layer-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #64748b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .layer-title::before {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, #a855f7, transparent);
+        }
+        .user-layer { display: flex; justify-content: center; }
+        .user-box {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            padding: 25px 50px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+        }
+        .user-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .main-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .component-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .component-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .component-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .frontend-icon { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .backend-icon { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .component-name { font-size: 1.3rem; font-weight: 600; }
+        .component-tech { font-size: 0.85rem; color: #94a3b8; }
+        .feature-list { list-style: none; }
+        .feature-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+        .feature-list li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: #a855f7;
+            font-weight: bold;
+        }
+        .engine-layer { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; }
+        .engine-box {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2));
+            border: 2px solid rgba(168, 85, 247, 0.5);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+        .engine-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        .engine-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .stat-item { background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; }
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: #c084fc; }
+        .stat-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; }
+        .db-box, .storage-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .db-icon, .storage-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .db-title, .storage-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
+        .db-tech, .storage-tech { font-size: 0.85rem; color: #94a3b8; }
+        .connection { display: flex; justify-content: center; padding: 15px 0; }
+        .arrow { display: flex; flex-direction: column; align-items: center; color: #64748b; }
+        .arrow-line { width: 2px; height: 30px; background: linear-gradient(180deg, #a855f7, #ec4899); }
+        .arrow-head {
+            width: 0; height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid #ec4899;
+        }
+        .arrow-label { font-size: 0.75rem; margin-top: 5px; color: #94a3b8; }
+        .voices-section { margin-top: 50px; }
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(180deg, #a855f7, #ec4899);
+            border-radius: 2px;
+        }
+        .voices-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .voice-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .voice-card:hover { border-color: rgba(168, 85, 247, 0.5); transform: translateY(-2px); }
+        .voice-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 5px; }
+        .voice-meta { font-size: 0.85rem; color: #94a3b8; }
+        .voice-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; margin-top: 10px; }
+        .badge-american { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .badge-british { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .flow-section { margin-top: 50px; }
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        .flow-step {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-width: 140px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .flow-step-icon { font-size: 2rem; margin-bottom: 10px; }
+        .flow-step-title { font-weight: 600; font-size: 0.95rem; }
+        .flow-step-desc { font-size: 0.75rem; color: #94a3b8; margin-top: 5px; }
+        .flow-arrow { font-size: 1.5rem; color: #a855f7; }
+        .performance-section { margin-top: 50px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .perf-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .perf-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .perf-label { font-size: 0.9rem; color: #94a3b8; margin-top: 5px; }
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .footer-text { color: #64748b; font-size: 0.9rem; }
+        @media print {
+            body { background: #1a1a2e; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TTS Content Studio</h1>
+            <p class="subtitle">Arquitetura do Sistema - DELkokoOtimized Engine</p>
+            <span class="version">v1.0.0 - CPU Optimized</span>
+        </div>
+        <div class="architecture">
+            <div class="layer">
+                <div class="layer-title">Camada de Acesso</div>
+                <div class="user-layer">
+                    <div class="user-box">
+                        <div class="user-icon">👤</div>
+                        <div class="component-name">Usuario</div>
+                        <div class="component-tech">Browser (Chrome, Firefox, Edge)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="connection">
+                <div class="arrow">
+                    <div class="arrow-line"></div>
+                    <div class="arrow-head"></div>
+                    <div class="arrow-label">HTTPS / WebSocket</div>
+                </div>
+            </div>
+            <div class="layer">
+                <div class="layer-title">Camada de Aplicacao</div>
+                <div class="main-layer">
+                    <div class="component-box">
+                        <div class="component-header">
+                            <div class="component-icon frontend-icon">⚛️</div>
+                            <div>
+                                <div class="component-name">Frontend</div>
+                                <div class="component-tech">React 18 + TypeScript + Vite</div>
+                            </div>
+                        </div>
+                        <ul class="feature-list">
+                            <li>Dashboard com estatisticas</li>
+                            <li>Editor de texto TTS</li>
+                            <li>Gerenciamento de projetos</li>
+                            <li>Player de audio integrado</li>
+                            <li>Selecao de vozes e velocidade</li>
+                            <li>Interface responsiva (Tailwind CSS)</li>
+                        </ul>
+                    </div>
+                    <div class="component-box">
+                        <div class="component-header">
+                            <div class="component-icon backend-icon">🐍</div>
+                            <div>
+                                <div class="component-name">Backend</div>
+                                <div class="component-tech">FastAPI + Python 3.11</div>
+                            </div>
+                        </div>
+                        <ul class="feature-list">
+                            <li>API REST completa</li>
+                            <li>WebSocket para atualizacoes</li>
+                            <li>Processamento async</li>
+                            <li>Gerenciamento de jobs</li>
+                            <li>Servico de arquivos de audio</li>
+                            <li>Validacao e seguranca</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="connection">
+                <div class="arrow">
+                    <div class="arrow-line"></div>
+                    <div class="arrow-head"></div>
+                    <div class="arrow-label">Internal API</div>
+                </div>
+            </div>
+            <div class="layer">
+                <div class="layer-title">Camada de Processamento e Dados</div>
+                <div class="engine-layer">
+                    <div class="engine-box">
+                        <div class="engine-title">DELkokoOtimized</div>
+                        <p style="color: #cbd5e1; margin-bottom: 15px;">Neural TTS Engine - ONNX Runtime</p>
+                        <div class="engine-stats">
+                            <div class="stat-item"><div class="stat-value">82M</div><div class="stat-label">Parametros</div></div>
+                            <div class="stat-item"><div class="stat-value">11</div><div class="stat-label">Vozes</div></div>
+                            <div class="stat-item"><div class="stat-value">~80MB</div><div class="stat-label">Tamanho</div></div>
+                            <div class="stat-item"><div class="stat-value">CPU</div><div class="stat-label">Otimizado</div></div>
+                        </div>
+                    </div>
+                    <div class="db-box">
+                        <div class="db-icon">🗄️</div>
+                        <div class="db-title">Database</div>
+                        <div class="db-tech">SQLite + SQLAlchemy</div>
+                        <ul class="feature-list" style="text-align: left; margin-top: 15px;">
+                            <li>Projetos</li>
+                            <li>Jobs</li>
+                            <li>Metadata</li>
+                        </ul>
+                    </div>
+                    <div class="storage-box">
+                        <div class="storage-icon">💾</div>
+                        <div class="storage-title">Storage</div>
+                        <div class="storage-tech">File System</div>
+                        <ul class="feature-list" style="text-align: left; margin-top: 15px;">
+                            <li>Modelos ONNX</li>
+                            <li>Audios .WAV</li>
+                            <li>Previews</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flow-section">
+            <h2 class="section-title">Fluxo de Processamento</h2>
+            <div class="flow-container">
+                <div class="flow-step"><div class="flow-step-icon">📝</div><div class="flow-step-title">Texto</div><div class="flow-step-desc">Usuario digita</div></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step"><div class="flow-step-icon">🌐</div><div class="flow-step-title">API</div><div class="flow-step-desc">FastAPI valida</div></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step"><div class="flow-step-icon">🧠</div><div class="flow-step-title">TTS Engine</div><div class="flow-step-desc">Neural processing</div></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step"><div class="flow-step-icon">🎵</div><div class="flow-step-title">Audio</div><div class="flow-step-desc">WAV gerado</div></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step"><div class="flow-step-icon">🔊</div><div class="flow-step-title">Player</div><div class="flow-step-desc">Reproducao web</div></div>
+            </div>
+        </div>
+        <div class="voices-section">
+            <h2 class="section-title">Vozes Disponiveis</h2>
+            <div class="voices-grid">
+                <div class="voice-card"><div class="voice-name">Heart</div><div class="voice-meta">Feminino</div><span class="voice-badge badge-american">Americano</span></div>
+                <div class="voice-card"><div class="voice-name">Bella</div><div class="voice-meta">Feminino</div><span class="voice-badge badge-american">Americano</span></div>
+                <div class="voice-card"><div class="voice-name">Nicole</div><div class="voice-meta">Feminino</div><span class="voice-badge badge-american">Americano</span></div>
+                <div class="voice-card"><div class="voice-name">Sarah</div><div class="voice-meta">Feminino</div><span class="voice-badge badge-american">Americano</span></div>
+                <div class="voice-card"><div class="voice-name">Sky</div><div class="voice-meta">Feminino</div><span class="voice-badge badge-american">Americano</span></div>
+                <div class="voice-card"><div class="voice-name">Adam</div><div class="voice-meta">Masculino</div><span class="voice-badge badge-american">Americano</span></div>
+                <div class="voice-card"><div class="voice-name">Michael</div><div class="voice-meta">Masculino</div><span class="voice-badge badge-american">Americano</span></div>
+                <div class="voice-card"><div class="voice-name">Emma</div><div class="voice-meta">Feminino</div><span class="voice-badge badge-british">Britanico</span></div>
+                <div class="voice-card"><div class="voice-name">Isabella</div><div class="voice-meta">Feminino</div><span class="voice-badge badge-british">Britanico</span></div>
+                <div class="voice-card"><div class="voice-name">George</div><div class="voice-meta">Masculino</div><span class="voice-badge badge-british">Britanico</span></div>
+                <div class="voice-card"><div class="voice-name">Lewis</div><div class="voice-meta">Masculino</div><span class="voice-badge badge-british">Britanico</span></div>
+            </div>
+        </div>
+        <div class="flow-section">
+            <h2 class="section-title">Metricas de Performance (CPU)</h2>
+            <div class="performance-section">
+                <div class="perf-card"><div class="perf-value">15-25x</div><div class="perf-label">Real-Time Factor</div></div>
+                <div class="perf-card"><div class="perf-value">100-200ms</div><div class="perf-label">Latencia</div></div>
+                <div class="perf-card"><div class="perf-value">~500MB</div><div class="perf-label">Uso de RAM</div></div>
+                <div class="perf-card"><div class="perf-value">4+ cores</div><div class="perf-label">Requisito CPU</div></div>
+            </div>
+        </div>
+        <div class="footer">
+            <p class="footer-text">TTS Content Studio v1.0.0 | Powered by DELkokoOtimized Engine | CPU Optimized Neural TTS</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Audio files (generated)
+backend/storage/audio/generated/*.wav
+backend/storage/audio/preview/*.wav
+
+# Models (too large for git - download separately)
+backend/storage/models/*.onnx
+backend/storage/models/*.bin
+
+# Vite cache
+frontend/.vite/
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Temp files
+*.tmp
+*.temp
