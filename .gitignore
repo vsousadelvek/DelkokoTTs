@@ -38,6 +38,7 @@ backend/storage/audio/preview/*.wav
 # Models (too large for git - download separately)
 backend/storage/models/*.onnx
 backend/storage/models/*.bin
+!backend/storage/models/delkoko-v1.0.onnx
 
 # Vite cache
 frontend/.vite/
