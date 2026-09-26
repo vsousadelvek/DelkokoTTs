@@ -1,0 +1,16 @@
+.git
+.gitattributes
+node_modules
+frontend/node_modules
+frontend/dist
+backend/storage/audio
+backend/storage/models
+backend/tts_studio.db
+.venv
+**/__pycache__
+*.pyc
+.idea
+.vscode
+docs
+*.md
+!README.md
