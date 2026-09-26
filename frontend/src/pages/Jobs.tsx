@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { api, type Job } from '@/services/api'
 import { useToast } from '@/hooks/use-toast'
-import { formatDate, formatDuration, formatFileSize } from '@/lib/utils'
+import { formatDate, formatDuration } from '@/lib/utils'
 import { Download, RefreshCw } from 'lucide-react'
 
 export default function Jobs() {
@@ -110,49 +110,35 @@ export default function Jobs() {
                         {getStatusLabel(job.status)}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        ID: {job.id.slice(0, 8)}
+                        ID: {job.id}
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground md:grid-cols-4">
                       <div>
                         <p className="font-medium text-foreground">Voz</p>
-                        <p>{job.voice_id}</p>
+                        <p>{job.voice}</p>
                       </div>
                       <div>
                         <p className="font-medium text-foreground">Tamanho do Texto</p>
-                        <p>{job.text_length} caracteres</p>
+                        <p>{job.text.length} caracteres</p>
                       </div>
-                      {job.duration_seconds && (
+                      {job.duration != null && (
                         <div>
                           <p className="font-medium text-foreground">Duração</p>
-                          <p>{formatDuration(job.duration_seconds)}</p>
-                        </div>
-                      )}
-                      {job.file_size_bytes && (
-                        <div>
-                          <p className="font-medium text-foreground">Tamanho</p>
-                          <p>{formatFileSize(job.file_size_bytes)}</p>
+                          <p>{formatDuration(job.duration)}</p>
                         </div>
                       )}
                     </div>
 
                     <div className="text-xs text-muted-foreground">
                       Criado em {formatDate(job.created_at)}
-                      {job.completed_at &&
-                        ` • Concluído em ${formatDate(job.completed_at)}`}
                     </div>
-
-                    {job.error_message && (
-                      <div className="text-sm text-red-500">
-                        Erro: {job.error_message}
-                      </div>
-                    )}
                   </div>
 
                   {job.audio_url && (
                     <Button variant="outline" size="sm" asChild>
-                      <a href={api.getAudioUrl(job.audio_url)} download>
+                      <a href={job.audio_url} download>
                         <Download className="mr-2 h-4 w-4" />
                         Download
                       </a>

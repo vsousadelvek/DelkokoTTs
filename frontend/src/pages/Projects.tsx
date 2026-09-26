@@ -31,7 +31,7 @@ export default function Projects() {
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (!confirm('Tem certeza que deseja excluir este projeto?')) {
       return
     }
@@ -104,10 +104,10 @@ export default function Projects() {
               <CardContent>
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground line-clamp-3">
-                    {project.text}
+                    {project.text_content}
                   </p>
                   <div className="text-xs text-muted-foreground space-y-1">
-                    <p>Voz: {project.voice_id}</p>
+                    <p>Voz: {project.voice}</p>
                     <p>Velocidade: {project.speed}x</p>
                   </div>
                   <div className="flex gap-2 pt-2">
