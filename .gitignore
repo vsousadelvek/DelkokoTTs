@@ -32,13 +32,7 @@ npm-debug.log*
 *.sqlite3
 
 # Audio files (generated)
-backend/storage/audio/generated/*.wav
-backend/storage/audio/preview/*.wav
-
-# Models (too large for git - download separately)
-backend/storage/models/*.onnx
-backend/storage/models/*.bin
-!backend/storage/models/delkoko-v1.0.onnx
+backend/storage/audio/
 
 # Vite cache
 frontend/.vite/

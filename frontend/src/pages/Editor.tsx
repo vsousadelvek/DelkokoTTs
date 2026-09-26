@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import { Progress } from '@/components/ui/progress'
-import { api, type Voice, type Project } from '@/services/api'
+import { api, type Voice } from '@/services/api'
 import { useToast } from '@/hooks/use-toast'
 import { Play, Wand2, Download, Save } from 'lucide-react'
 
@@ -52,12 +52,9 @@ export default function Editor() {
     try {
       const project = await api.getProject(id)
       setProjectName(project.name)
-      setText(project.text)
-      setSelectedVoice(project.voice_id)
+      setText(project.text_content)
+      setSelectedVoice(project.voice)
       setSpeed(project.speed)
-      if (project.audio_url) {
-        setAudioUrl(api.getAudioUrl(project.audio_url))
-      }
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -78,14 +75,13 @@ export default function Editor() {
     }
 
     try {
-      const blob = await api.preview({
+      const result = await api.preview({
         text: text.substring(0, 500),
-        voice_id: selectedVoice,
+        voice: selectedVoice,
         speed,
       })
 
-      const url = URL.createObjectURL(blob)
-      setAudioUrl(url)
+      setAudioUrl(result.audio_url)
 
       toast({
         title: 'Preview gerado',
@@ -127,17 +123,14 @@ export default function Editor() {
     try {
       const result = await api.synthesize({
         text,
-        voice_id: selectedVoice,
+        voice: selectedVoice,
         speed,
-        output_format: 'mp3',
       })
 
       clearInterval(progressInterval)
       setProgress(100)
 
-      if (result.audio_url) {
-        setAudioUrl(api.getAudioUrl(result.audio_url))
-      }
+      setAudioUrl(result.audio_url)
 
       toast({
         title: 'Áudio gerado',
@@ -167,12 +160,11 @@ export default function Editor() {
     }
 
     try {
-      const projectData: Partial<Project> = {
+      const projectData = {
         name: projectName,
-        text,
-        voice_id: selectedVoice,
+        text_content: text,
+        voice: selectedVoice,
         speed,
-        output_format: 'mp3',
       }
 
       if (projectId) {
@@ -246,7 +238,7 @@ export default function Editor() {
                   <SelectContent>
                     {voices.map((voice) => (
                       <SelectItem key={voice.id} value={voice.id}>
-                        {voice.name} ({voice.language})
+                        {voice.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

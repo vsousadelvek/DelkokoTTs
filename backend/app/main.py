@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.tts_engine import tts_engine
@@ -50,16 +51,7 @@ app.include_router(projects.router)
 app.include_router(jobs.router)
 
 
-@app.get("/")
-async def root():
-    return {
-        "name": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "status": "running"
-    }
-
-
-@app.get("/health")
+@app.get("/api/health")
 async def health_check():
     return {
         "status": "healthy",
@@ -68,7 +60,7 @@ async def health_check():
     }
 
 
-@app.get("/stats")
+@app.get("/api/stats")
 async def get_stats():
     from app.models.database import async_session_maker
     from app.models.project import Project
@@ -99,8 +91,21 @@ async def get_stats():
                 "by_status": jobs_by_status
             },
             "tts": {
-                "engine": "DELkokoOtimized",
+                "engine": "kokoro-82m (onnx)",
                 "voices": len(tts_engine.VOICES),
                 "initialized": tts_engine.initialized
             }
         }
+
+
+# Serve the built frontend (frontend/dist) when present — production/Docker.
+# API routes are registered above, so this catch-all only handles client paths.
+FRONTEND_DIST = settings.BASE_DIR.parent / "frontend" / "dist"
+
+if FRONTEND_DIST.is_dir():
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_frontend(full_path: str):
+        candidate = (FRONTEND_DIST / full_path).resolve()
+        if full_path and candidate.is_file() and FRONTEND_DIST.resolve() in candidate.parents:
+            return FileResponse(candidate)
+        return FileResponse(FRONTEND_DIST / "index.html")

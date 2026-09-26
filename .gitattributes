@@ -1,1 +1,2 @@
-backend/storage/models/delkoko-v1.0.onnx filter=lfs diff=lfs merge=lfs -text
+backend/storage/models/*.onnx filter=lfs diff=lfs merge=lfs -text
+backend/storage/models/*.bin filter=lfs diff=lfs merge=lfs -text

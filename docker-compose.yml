@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Persist SQLite DB and generated audio on a named volume
+      DATABASE_URL: sqlite+aiosqlite:////app/data/tts_studio.db
+      AUDIO_DIR: /app/data/audio
+    volumes:
+      - tts-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  tts-data:

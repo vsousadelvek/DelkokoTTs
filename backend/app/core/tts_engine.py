@@ -1,3 +1,4 @@
+import asyncio
 import kokoro_onnx
 import soundfile as sf
 import numpy as np
@@ -37,7 +38,7 @@ class TTSEngine:
         if self.initialized:
             return
 
-        model_path = settings.MODELS_DIR / "delkoko-v1.0.onnx"
+        model_path = settings.MODELS_DIR / "kokoro-v1.0.onnx"
         voices_path = settings.MODELS_DIR / "voices-v1.0.bin"
 
         if not model_path.exists() or not voices_path.exists():
@@ -54,7 +55,7 @@ class TTSEngine:
 
         self.initialized = True
         print("=" * 60)
-        print("DELkokoOtimized TTS Engine Initialized")
+        print("TTS engine initialized: Kokoro-82M (ONNX)")
         print("=" * 60)
 
     def get_voices(self) -> List[Dict[str, str]]:
@@ -91,8 +92,10 @@ class TTSEngine:
         # Clamp speed between 0.5 and 2.0
         speed = max(0.5, min(2.0, speed))
 
-        # Generate audio
-        samples, sample_rate = self.engine.create(
+        # Kokoro inference is CPU-bound and synchronous; run it off the
+        # event loop so concurrent requests don't block the server.
+        samples, sample_rate = await asyncio.to_thread(
+            self.engine.create,
             text,
             voice=voice,
             speed=speed,

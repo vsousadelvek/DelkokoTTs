@@ -4,7 +4,7 @@ uvicorn[standard]>=0.30.0
 python-multipart>=0.0.9
 websockets>=12.0
 
-# TTS Engine - DELkokoOtimized
+# TTS Engine - Kokoro-82M (ONNX)
 kokoro-onnx>=0.4.5
 onnxruntime>=1.19.0
 soundfile>=0.12.1
@@ -15,7 +15,7 @@ scipy>=1.13.0
 pydub>=0.25.1
 
 # Database (SQLite)
-sqlalchemy>=2.0.30
+sqlalchemy[asyncio]>=2.0.30
 aiosqlite>=0.20.0
 
 # Utils

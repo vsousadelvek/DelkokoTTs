@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { api, type StatsResponse, type Project, type Job } from '@/services/api'
-import { formatDuration, formatFileSize, formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
-import { FileAudio, FolderOpen, Clock, HardDrive, CheckCircle2, XCircle } from 'lucide-react'
+import { FileAudio, FolderOpen, CheckCircle2, XCircle } from 'lucide-react'
 
 export default function Dashboard() {
   const [stats, setStats] = useState<StatsResponse | null>(null)
@@ -27,7 +27,7 @@ export default function Dashboard() {
         api.getJobs(),
       ])
 
-      setHealthStatus(healthRes.status)
+      setHealthStatus(healthRes.status === 'healthy' ? 'ok' : 'error')
       setStats(statsRes)
       setRecentProjects(projectsRes.slice(0, 5))
       setRecentJobs(jobsRes.slice(0, 5))
@@ -60,7 +60,7 @@ export default function Dashboard() {
             <FolderOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.total_projects || 0}</div>
+            <div className="text-2xl font-bold">{stats?.projects.total || 0}</div>
           </CardContent>
         </Card>
 
@@ -72,20 +72,20 @@ export default function Dashboard() {
             <FileAudio className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.total_jobs || 0}</div>
+            <div className="text-2xl font-bold">{stats?.jobs.total || 0}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Duração Total
+              Jobs Concluídos
             </CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatDuration(stats?.total_duration_seconds || 0)}
+              {stats?.jobs.by_status?.completed || 0}
             </div>
           </CardContent>
         </Card>
@@ -93,13 +93,13 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Armazenamento
+              Vozes Disponíveis
             </CardTitle>
-            <HardDrive className="h-4 w-4 text-muted-foreground" />
+            <FileAudio className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatFileSize(stats?.storage_used_bytes || 0)}
+              {stats?.tts.voices || 0}
             </div>
           </CardContent>
         </Card>
@@ -199,7 +199,7 @@ export default function Dashboard() {
                     </div>
                     {job.audio_url && (
                       <Button variant="ghost" size="sm" asChild>
-                        <a href={api.getAudioUrl(job.audio_url)} download>
+                        <a href={job.audio_url} download>
                           Download
                         </a>
                       </Button>
