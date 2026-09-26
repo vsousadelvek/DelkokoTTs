@@ -1,0 +1,17 @@
+TTS Content Studio
+Copyright (c) 2026 Delvek da Silva Venceslau de Sousa
+
+This product includes the Kokoro-82M text-to-speech model, licensed under the
+Apache License, Version 2.0.
+
+  - Model: Kokoro-82M — https://huggingface.co/hexgrad/Kokoro-82M
+  - ONNX export: kokoro-v1.0.onnx + voices-v1.0.bin from
+    https://github.com/thewh1teagle/kokoro-onnx (release model-files-v1.0)
+  - Runtime library: kokoro-onnx — https://github.com/thewh1teagle/kokoro-onnx
+
+You may obtain a copy of the Apache License, Version 2.0 at
+http://www.apache.org/licenses/LICENSE-2.0
+
+The Kokoro-82M model files in backend/storage/models/ are distributed under
+the Apache License 2.0. They are not covered by the MIT license that applies
+to the rest of this repository.
